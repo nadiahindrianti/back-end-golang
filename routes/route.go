@@ -63,6 +63,10 @@ func Init(e *echo.Echo, db *gorm.DB) {
 	historySearchUsecase := usecases.NewHistorySearchUsecase(historySearchRepository, userRepository)
 	historySearchController := controllers.NewHistorySearchController(historySearchUsecase)
 
+	paymentRepository := repositories.NewPaymentRepository(db)
+	paymentUsecase := usecases.NewPaymentUsecase(paymentRepository)
+	paymentController := controllers.NewPaymentController(paymentUsecase)
+
 	api := e.Group("/api/v1")
 
 	// USER
@@ -86,6 +90,12 @@ func Init(e *echo.Echo, db *gorm.DB) {
 	user.GET("/history-search", historySearchController.HistorySearchGetAll)
 	user.POST("/history-search", historySearchController.HistorySearchCreate)
 	user.DELETE("/history-search/:id", historySearchController.HistorySearchDelete)
+
+	// payment
+	user.GET("/payment/:id", paymentController.GetPaymentByID)
+	user.POST("/payment", paymentController.CreatePayment)
+	user.PUT("/payment/:id", paymentController.UpdatePayment)
+	user.DELETE("/payment/:id", paymentController.DeletePayment)
 
 	// ADMIN
 
