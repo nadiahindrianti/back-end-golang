@@ -184,5 +184,6 @@ func MigrateDB(db *gorm.DB) error {
 		&models.Article{},
 		&models.Recommendation{},
 		&models.HistorySearch{},
+		&models.Payment{},
 	)
 }
