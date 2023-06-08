@@ -71,6 +71,20 @@ func Init(e *echo.Echo, db *gorm.DB) {
 	historySearchUsecase := usecases.NewHistorySearchUsecase(historySearchRepository, userRepository)
 	historySearchController := controllers.NewHistorySearchController(historySearchUsecase)
 
+	hotelRepository := repositories.NewHotelRepository(db)
+	hotelRoomRepository := repositories.NewHotelRoomRepository(db)
+	hotelRoomImageRepository := repositories.NewHotelRoomImageRepository(db)
+	hotelRoomFacilitiesRepository := repositories.NewHotelRoomFacilitiesRepository(db)
+
+	hotelImageRepository := repositories.NewHotelImageRepository(db)
+	hotelFacilitiesRepository := repositories.NewHotelFacilitiesRepository(db)
+	hotelPolicyRepository := repositories.NewHotelPoliciesRepository(db)
+	hotelUsecase := usecases.NewHotelUsecase(hotelRepository, hotelRoomRepository, hotelRoomImageRepository, hotelRoomFacilitiesRepository, hotelImageRepository, hotelFacilitiesRepository, hotelPolicyRepository)
+	hotelController := controllers.NewHotelController(hotelUsecase)
+
+	hotelRoomUsecase := usecases.NewHotelRoomUsecase(hotelRepository, hotelRoomRepository, hotelRoomImageRepository, hotelRoomFacilitiesRepository)
+	hotelRoomController := controllers.NewHotelRoomController(hotelRoomUsecase)
+
 	// Middleware CORS
 	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
 		AllowOrigins: []string{"*"}, // Izinkan semua domain
@@ -155,4 +169,16 @@ func Init(e *echo.Echo, db *gorm.DB) {
 	admin.PUT("/payment/:id", paymentController.UpdatePayment)
 	admin.POST("/payment", paymentController.CreatePayment)
 	admin.DELETE("/payment/:id", paymentController.DeletePayment)
+
+	public.GET("/hotel", hotelController.GetAllHotels)
+	public.GET("/hotel/:id", hotelController.GetHotelByID)
+	admin.PUT("/hotel/:id", hotelController.UpdateHotel)
+	admin.POST("/hotel", hotelController.CreateHotel)
+	admin.DELETE("/hotel/:id", hotelController.DeleteHotel)
+
+	admin.GET("/hotel-room", hotelRoomController.GetAllHotelRooms)
+	public.GET("/hotel-room/:id", hotelRoomController.GetHotelRoomByID)
+	public.PUT("/hotel-room/:id", hotelRoomController.UpdateHotelRoom)
+	admin.POST("/hotel-room", hotelRoomController.CreateHotelRoom)
+	admin.DELETE("/hotel-room/:id", hotelRoomController.DeleteHotelRoom)
 }
