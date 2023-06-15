@@ -807,7 +807,7 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
-                        "description": "Order by name",
+                        "description": "Filter order by",
                         "name": "order_by",
                         "in": "query"
                     },
@@ -3981,6 +3981,75 @@ const docTemplate = `{
                 }
             }
         },
+        "/user/hotel-rating": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Create a new hotel rating",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User - Hotel Rating"
+                ],
+                "summary": "Create a new hotel rating",
+                "parameters": [
+                    {
+                        "description": "Payload Body [RAW]",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dtos.HotelRatingInput"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/dtos.HotelRatingCreeatedResponses"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/dtos.BadRequestResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/dtos.UnauthorizedResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/dtos.ForbiddenResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/dtos.NotFoundResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/dtos.InternalServerErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/user/hotel/order": {
             "post": {
                 "security": [
@@ -4230,6 +4299,73 @@ const docTemplate = `{
                 }
             }
         },
+        "/user/notification/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Get notification by user id",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "user - Notification"
+                ],
+                "summary": "Get notification by user id",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "user id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dtos.GetNotificationByUserIDStatusOKResponses"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/dtos.BadRequestResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/dtos.UnauthorizedResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/dtos.ForbiddenResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/dtos.NotFoundResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/dtos.InternalServerErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/user/order/hotel": {
             "get": {
                 "security": [
@@ -4259,6 +4395,36 @@ const docTemplate = `{
                         "type": "integer",
                         "description": "Number of items per page",
                         "name": "limit",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Search order",
+                        "name": "search",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by name hotel",
+                        "name": "name",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by address hotel",
+                        "name": "address",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by order date hotel",
+                        "name": "order_date",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter order by",
+                        "name": "order_by",
                         "in": "query"
                     },
                     {
@@ -4333,6 +4499,18 @@ const docTemplate = `{
                         "name": "hotel_order_id",
                         "in": "query",
                         "required": true
+                    },
+                    {
+                        "type": "boolean",
+                        "description": "Update status order check in",
+                        "name": "update_check_in",
+                        "in": "query"
+                    },
+                    {
+                        "type": "boolean",
+                        "description": "Update status order check out",
+                        "name": "update_check_out",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -4404,6 +4582,30 @@ const docTemplate = `{
                         "type": "integer",
                         "description": "Number of items per page",
                         "name": "limit",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Search order",
+                        "name": "search",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by class train",
+                        "name": "class",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by name train",
+                        "name": "name",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter order by",
+                        "name": "order_by",
                         "in": "query"
                     },
                     {
@@ -5324,6 +5526,22 @@ const docTemplate = `{
                 }
             }
         },
+        "dtos.GetNotificationByUserIDStatusOKResponses": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/dtos.NotificationResponse"
+                },
+                "message": {
+                    "type": "string",
+                    "example": "Successfully get notification"
+                },
+                "status_code": {
+                    "type": "integer",
+                    "example": 200
+                }
+            }
+        },
         "dtos.HistorySearchCreeatedResponse": {
             "type": "object",
             "properties": {
@@ -5417,6 +5635,12 @@ const docTemplate = `{
                 },
                 "hotel_policy": {
                     "$ref": "#/definitions/dtos.HotelPoliciesResponse"
+                },
+                "hotel_rating": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/dtos.RatingInfo"
+                    }
                 },
                 "hotel_room": {
                     "type": "array",
@@ -5693,6 +5917,14 @@ const docTemplate = `{
                     "type": "integer",
                     "example": 1
                 },
+                "is_check_in": {
+                    "type": "boolean",
+                    "example": false
+                },
+                "is_check_out": {
+                    "type": "boolean",
+                    "example": false
+                },
                 "name_order": {
                     "type": "string",
                     "example": "Mochammad Hanif"
@@ -5852,6 +6084,62 @@ const docTemplate = `{
                 },
                 "time_check_out": {
                     "type": "string"
+                }
+            }
+        },
+        "dtos.HotelRatingCreeatedResponses": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/dtos.HotelRatingResponse"
+                },
+                "message": {
+                    "type": "string",
+                    "example": "Successfully created hotel rating"
+                },
+                "status_code": {
+                    "type": "integer",
+                    "example": 201
+                }
+            }
+        },
+        "dtos.HotelRatingInput": {
+            "type": "object",
+            "properties": {
+                "hotel_id": {
+                    "type": "integer"
+                },
+                "hotel_order_id": {
+                    "type": "integer"
+                },
+                "rating": {
+                    "type": "integer"
+                },
+                "review": {
+                    "type": "string"
+                },
+                "user_id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "dtos.HotelRatingResponse": {
+            "type": "object",
+            "properties": {
+                "hotel_id": {
+                    "type": "integer"
+                },
+                "hotel_order_id": {
+                    "type": "integer"
+                },
+                "rating": {
+                    "type": "integer"
+                },
+                "review": {
+                    "type": "string"
+                },
+                "user_id": {
+                    "type": "integer"
                 }
             }
         },
@@ -6188,6 +6476,20 @@ const docTemplate = `{
                 }
             }
         },
+        "dtos.NotificationResponse": {
+            "type": "object",
+            "properties": {
+                "notification_content": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/dtos.TemplateMessageByUserIDResponse"
+                    }
+                },
+                "user_id": {
+                    "type": "integer"
+                }
+            }
+        },
         "dtos.PaymentCreeatedResponse": {
             "type": "object",
             "properties": {
@@ -6291,6 +6593,30 @@ const docTemplate = `{
                 "status_code": {
                     "type": "integer",
                     "example": 200
+                }
+            }
+        },
+        "dtos.RatingInfo": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string",
+                    "format": "2006-01-02 15:04:05"
+                },
+                "rating": {
+                    "type": "integer"
+                },
+                "review": {
+                    "type": "string"
+                },
+                "user_id": {
+                    "type": "integer"
+                },
+                "user_image": {
+                    "type": "string"
+                },
+                "username": {
+                    "type": "string"
                 }
             }
         },
@@ -6426,6 +6752,25 @@ const docTemplate = `{
                 "status_code": {
                     "type": "integer",
                     "example": 200
+                }
+            }
+        },
+        "dtos.TemplateMessageByUserIDResponse": {
+            "type": "object",
+            "properties": {
+                "content": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string",
+                    "example": "2023-05-17T15:07:16.504+07:00"
+                },
+                "title": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string",
+                    "example": "2023-05-17T15:07:16.504+07:00"
                 }
             }
         },
@@ -7353,7 +7698,7 @@ const docTemplate = `{
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
 	Version:          "1.0",
-	Host:             "capstone.hanifz.com",
+	Host:             "api.tripease.my.id",
 	BasePath:         "/api/v1",
 	Schemes:          []string{},
 	Title:            "Tripease API Documentation",

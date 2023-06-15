@@ -313,3 +313,15 @@ type HotelOrderCreeatedResponse struct {
 	Message    string             `json:"message" example:"Successfully created ticket order"`
 	Data       HotelOrderResponse `json:"data"`
 }
+
+type GetNotificationByUserIDStatusOKResponses struct {
+	StatusCode int                  `json:"status_code" example:"200"`
+	Message    string               `json:"message" example:"Successfully get notification"`
+	Data       NotificationResponse `json:"data"`
+}
+
+type HotelRatingCreeatedResponses struct {
+	StatusCode int                 `json:"status_code" example:"201"`
+	Message    string              `json:"message" example:"Successfully created hotel rating"`
+	Data       HotelRatingResponse `json:"data"`
+}

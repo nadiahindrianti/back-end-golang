@@ -236,6 +236,17 @@ definitions:
         example: 200
         type: integer
     type: object
+  dtos.GetNotificationByUserIDStatusOKResponses:
+    properties:
+      data:
+        $ref: '#/definitions/dtos.NotificationResponse'
+      message:
+        example: Successfully get notification
+        type: string
+      status_code:
+        example: 200
+        type: integer
+    type: object
   dtos.HistorySearchCreeatedResponse:
     properties:
       data:
@@ -299,6 +310,10 @@ definitions:
         type: array
       hotel_policy:
         $ref: '#/definitions/dtos.HotelPoliciesResponse'
+      hotel_rating:
+        items:
+          $ref: '#/definitions/dtos.RatingInfo'
+        type: array
       hotel_room:
         items:
           $ref: '#/definitions/dtos.HotelRoomHotelIDResponse'
@@ -488,6 +503,12 @@ definitions:
       hotel_order_id:
         example: 1
         type: integer
+      is_check_in:
+        example: false
+        type: boolean
+      is_check_out:
+        example: false
+        type: boolean
       name_order:
         example: Mochammad Hanif
         type: string
@@ -598,6 +619,43 @@ definitions:
         type: string
       time_check_out:
         type: string
+    type: object
+  dtos.HotelRatingCreeatedResponses:
+    properties:
+      data:
+        $ref: '#/definitions/dtos.HotelRatingResponse'
+      message:
+        example: Successfully created hotel rating
+        type: string
+      status_code:
+        example: 201
+        type: integer
+    type: object
+  dtos.HotelRatingInput:
+    properties:
+      hotel_id:
+        type: integer
+      hotel_order_id:
+        type: integer
+      rating:
+        type: integer
+      review:
+        type: string
+      user_id:
+        type: integer
+    type: object
+  dtos.HotelRatingResponse:
+    properties:
+      hotel_id:
+        type: integer
+      hotel_order_id:
+        type: integer
+      rating:
+        type: integer
+      review:
+        type: string
+      user_id:
+        type: integer
     type: object
   dtos.HotelResponse:
     properties:
@@ -822,6 +880,15 @@ definitions:
         example: 404
         type: integer
     type: object
+  dtos.NotificationResponse:
+    properties:
+      notification_content:
+        items:
+          $ref: '#/definitions/dtos.TemplateMessageByUserIDResponse'
+        type: array
+      user_id:
+        type: integer
+    type: object
   dtos.PaymentCreeatedResponse:
     properties:
       data:
@@ -897,6 +964,22 @@ definitions:
       status_code:
         example: 200
         type: integer
+    type: object
+  dtos.RatingInfo:
+    properties:
+      created_at:
+        format: "2006-01-02 15:04:05"
+        type: string
+      rating:
+        type: integer
+      review:
+        type: string
+      user_id:
+        type: integer
+      user_image:
+        type: string
+      username:
+        type: string
     type: object
   dtos.StationCreeatedResponse:
     properties:
@@ -993,6 +1076,19 @@ definitions:
       status_code:
         example: 200
         type: integer
+    type: object
+  dtos.TemplateMessageByUserIDResponse:
+    properties:
+      content:
+        type: string
+      created_at:
+        example: "2023-05-17T15:07:16.504+07:00"
+        type: string
+      title:
+        type: string
+      updated_at:
+        example: "2023-05-17T15:07:16.504+07:00"
+        type: string
     type: object
   dtos.TicketOrderCreeatedResponse:
     properties:
@@ -1641,7 +1737,7 @@ definitions:
 externalDocs:
   description: OpenAPI
   url: https://swagger.io/resources/open-api/
-host: capstone.hanifz.com
+host: api.tripease.my.id
 info:
   contact:
     name: Capstone Alterra Group 7
@@ -2153,7 +2249,7 @@ paths:
         in: query
         name: date_end
         type: string
-      - description: Order by name
+      - description: Filter order by
         in: query
         name: order_by
         type: string
@@ -4224,6 +4320,50 @@ paths:
       summary: Delete a history search
       tags:
       - User - History Search
+  /user/hotel-rating:
+    post:
+      consumes:
+      - application/json
+      description: Create a new hotel rating
+      parameters:
+      - description: Payload Body [RAW]
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dtos.HotelRatingInput'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/dtos.HotelRatingCreeatedResponses'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dtos.BadRequestResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/dtos.UnauthorizedResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/dtos.ForbiddenResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/dtos.NotFoundResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dtos.InternalServerErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Create a new hotel rating
+      tags:
+      - User - Hotel Rating
   /user/hotel/order:
     patch:
       consumes:
@@ -4385,6 +4525,49 @@ paths:
       summary: Search Hotel Available
       tags:
       - User - Hotel
+  /user/notification/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Get notification by user id
+      parameters:
+      - description: user id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dtos.GetNotificationByUserIDStatusOKResponses'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dtos.BadRequestResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/dtos.UnauthorizedResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/dtos.ForbiddenResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/dtos.NotFoundResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dtos.InternalServerErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Get notification by user id
+      tags:
+      - user - Notification
   /user/order/hotel:
     get:
       consumes:
@@ -4399,6 +4582,26 @@ paths:
         in: query
         name: limit
         type: integer
+      - description: Search order
+        in: query
+        name: search
+        type: string
+      - description: Filter by name hotel
+        in: query
+        name: name
+        type: string
+      - description: Filter by address hotel
+        in: query
+        name: address
+        type: string
+      - description: Filter by order date hotel
+        in: query
+        name: order_date
+        type: string
+      - description: Filter order by
+        in: query
+        name: order_by
+        type: string
       - description: Filter by status order
         in: query
         name: status
@@ -4446,6 +4649,14 @@ paths:
         name: hotel_order_id
         required: true
         type: integer
+      - description: Update status order check in
+        in: query
+        name: update_check_in
+        type: boolean
+      - description: Update status order check out
+        in: query
+        name: update_check_out
+        type: boolean
       produces:
       - application/json
       responses:
@@ -4492,6 +4703,22 @@ paths:
         in: query
         name: limit
         type: integer
+      - description: Search order
+        in: query
+        name: search
+        type: string
+      - description: Filter by class train
+        in: query
+        name: class
+        type: string
+      - description: Filter by name train
+        in: query
+        name: name
+        type: string
+      - description: Filter order by
+        in: query
+        name: order_by
+        type: string
       - description: Filter by status order
         in: query
         name: status
