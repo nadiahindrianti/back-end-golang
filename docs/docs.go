@@ -3981,7 +3981,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/user/hotel-rating": {
+        "/user/hotel-ratings": {
             "post": {
                 "security": [
                     {
@@ -4314,7 +4314,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "user - Notification"
+                    "User - Notification"
                 ],
                 "summary": "Get notification by user id",
                 "parameters": [

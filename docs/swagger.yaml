@@ -4320,7 +4320,7 @@ paths:
       summary: Delete a history search
       tags:
       - User - History Search
-  /user/hotel-rating:
+  /user/hotel-ratings:
     post:
       consumes:
       - application/json
@@ -4567,7 +4567,7 @@ paths:
       - BearerAuth: []
       summary: Get notification by user id
       tags:
-      - user - Notification
+      - User - Notification
   /user/order/hotel:
     get:
       consumes:
