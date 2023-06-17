@@ -107,6 +107,10 @@ func Init(e *echo.Echo, db *gorm.DB) {
 	notificationUsecase := usecases.NewNotificationUsecase(notificationRepository, templateMessageRepository, userRepository, hotelOrderRepository, ticketOrderRepository)
 	notificationController := controllers.NewNotificationController(notificationUsecase)
 
+	historySearchStationRepository := repositories.NewHistorySearchStationRepository(db)
+	historySearchStationUsecase := usecases.NewHistorySearchStationUsecase(historySearchStationRepository, userRepository)
+	historySearchStationController := controllers.NewHistorySearchStationController(historySearchStationUsecase)
+
 	// Middleware CORS
 	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
 		AllowOrigins: []string{"*"}, // Izinkan semua domain
@@ -160,6 +164,11 @@ func Init(e *echo.Echo, db *gorm.DB) {
 	user.POST("/hotel-ratings", hotelRatingsController.CreateHotelRating)
 	user.GET("/hotel-ratings-order/:id", hotelRatingsController.GetHotelRatingsByIdOrders)
 	user.GET("/hotel-ratings-all/:id", hotelRatingsController.GetAllHotelRatingsByIdHotels)
+
+	user.GET("/history-search-stations", historySearchStationController.GetAllHistorySearchStation)
+	user.GET("/history-search-station", historySearchStationController.GetHistorySearchStationByID)
+	user.POST("/history-search-station", historySearchStationController.CreateHistorySearchStation)
+	user.PUT("/history-search-station/:id", historySearchStationController.UpdateHistorySearchStation)
 
 	// ADMIN
 	admin := api.Group("/admin")

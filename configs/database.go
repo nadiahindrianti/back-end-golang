@@ -182,6 +182,7 @@ func MigrateDB(db *gorm.DB) error {
 		&models.TicketTravelerDetail{},
 		&models.Article{},
 		&models.HistorySearch{},
+		&models.HistorySearchStation{},
 		&models.Payment{},
 		&models.Hotel{},
 		&models.HotelImage{},
