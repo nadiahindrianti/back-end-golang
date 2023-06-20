@@ -4,8 +4,12 @@ import (
 	"back-end-golang/dtos"
 	"back-end-golang/helpers"
 	"back-end-golang/middlewares"
+	"back-end-golang/models"
 	"back-end-golang/usecases"
+	"encoding/csv"
+	"fmt"
 	"net/http"
+	"os"
 	"strconv"
 
 	"github.com/labstack/echo/v4"
@@ -16,8 +20,11 @@ type HotelOrderController interface {
 	GetHotelOrdersByAdmin(c echo.Context) error
 	GetHotelOrderDetailByAdmin(c echo.Context) error
 	GetHotelOrderByID(c echo.Context) error
+	GetHotelOrderByID2(c echo.Context) error
 	CreateHotelOrder(c echo.Context) error
+	CreateHotelOrder2(c echo.Context) error
 	UpdateHotelOrder(c echo.Context) error
+	CsvHotelOrder(ctx echo.Context) error
 }
 
 type hotelOrderController struct {
@@ -246,6 +253,62 @@ func (c *hotelOrderController) GetHotelOrderByID(ctx echo.Context) error {
 	)
 }
 
+func (c *hotelOrderController) GetHotelOrderByID2(ctx echo.Context) error {
+	tokenString := middlewares.GetTokenFromHeader(ctx.Request())
+	if tokenString == "" {
+		return ctx.JSON(
+			http.StatusUnauthorized,
+			helpers.NewErrorResponse(
+				http.StatusUnauthorized,
+				"No token provided",
+				helpers.GetErrorData(nil),
+			),
+		)
+	}
+
+	userId, err := middlewares.GetUserIdFromToken(tokenString)
+	if err != nil {
+		return ctx.JSON(
+			http.StatusUnauthorized,
+			helpers.NewErrorResponse(
+				http.StatusUnauthorized,
+				"No token provided",
+				helpers.GetErrorData(err),
+			),
+		)
+	}
+
+	hotelOrderIdParam := ctx.QueryParam("hotel_order_id")
+	hotelOrderId, _ := strconv.Atoi(hotelOrderIdParam)
+
+	isCheckInParam := ctx.QueryParam("update_check_in")
+	isCheckIn, _ := strconv.ParseBool(isCheckInParam)
+
+	isCheckOutParam := ctx.QueryParam("update_check_out")
+	isCheckOut, _ := strconv.ParseBool(isCheckOutParam)
+
+	hotelOrder, err := c.hotelOrderUsecase.GetHotelOrderByID2(userId, uint(hotelOrderId), isCheckIn, isCheckOut)
+	if err != nil {
+		return ctx.JSON(
+			http.StatusBadRequest,
+			helpers.NewErrorResponse(
+				http.StatusBadRequest,
+				"Failed to get a hotel order",
+				helpers.GetErrorData(err),
+			),
+		)
+	}
+
+	return ctx.JSON(
+		http.StatusOK,
+		helpers.NewResponse(
+			http.StatusOK,
+			"Successfully to get order hotels",
+			hotelOrder,
+		),
+	)
+}
+
 func (c *hotelOrderController) CreateHotelOrder(ctx echo.Context) error {
 	tokenString := middlewares.GetTokenFromHeader(ctx.Request())
 	if tokenString == "" {
@@ -284,6 +347,65 @@ func (c *hotelOrderController) CreateHotelOrder(ctx echo.Context) error {
 	}
 
 	hotelOrder, err := c.hotelOrderUsecase.CreateHotelOrder(userId, hotelOrderInput)
+	if err != nil {
+		return ctx.JSON(
+			http.StatusBadRequest,
+			helpers.NewErrorResponse(
+				http.StatusBadRequest,
+				"Failed to created a hotel order",
+				helpers.GetErrorData(err),
+			),
+		)
+	}
+
+	return ctx.JSON(
+		http.StatusCreated,
+		helpers.NewResponse(
+			http.StatusCreated,
+			"Successfully to created a hotel order",
+			hotelOrder,
+		),
+	)
+}
+
+func (c *hotelOrderController) CreateHotelOrder2(ctx echo.Context) error {
+	tokenString := middlewares.GetTokenFromHeader(ctx.Request())
+	if tokenString == "" {
+		return ctx.JSON(
+			http.StatusUnauthorized,
+			helpers.NewErrorResponse(
+				http.StatusUnauthorized,
+				"No token provided",
+				helpers.GetErrorData(nil),
+			),
+		)
+	}
+
+	userId, err := middlewares.GetUserIdFromToken(tokenString)
+	if err != nil {
+		return ctx.JSON(
+			http.StatusUnauthorized,
+			helpers.NewErrorResponse(
+				http.StatusUnauthorized,
+				"No token provided",
+				helpers.GetErrorData(err),
+			),
+		)
+	}
+
+	var hotelOrderInput dtos.HotelOrderMidtransInput
+	if err := ctx.Bind(&hotelOrderInput); err != nil {
+		return ctx.JSON(
+			http.StatusBadRequest,
+			helpers.NewErrorResponse(
+				http.StatusBadRequest,
+				"Failed binding hotel order",
+				helpers.GetErrorData(err),
+			),
+		)
+	}
+
+	hotelOrder, err := c.hotelOrderUsecase.CreateHotelOrder2(userId, hotelOrderInput)
 	if err != nil {
 		return ctx.JSON(
 			http.StatusBadRequest,
@@ -368,4 +490,81 @@ func (c *hotelOrderController) UpdateHotelOrder(ctx echo.Context) error {
 		),
 	)
 
+}
+func (c *hotelOrderController) CsvHotelOrder(ctx echo.Context) error {
+	var cloudinary models.Url
+
+	// Mendapatkan data hotel order dari sumber data yang sesuai
+	hotelOrders, err := c.hotelOrderUsecase.CsvHotelOrder()
+	if err != nil {
+		fmt.Println("Gagal mendapatkan data hotel order:", err)
+		return err
+	}
+
+	uploadUrl, err := usecases.NewMediaUpload().RemoteUpload(models.Url{Url: "hotel_orders.csv"})
+	if err != nil {
+		return ctx.JSON(
+			http.StatusInternalServerError,
+			helpers.NewErrorResponse(
+				http.StatusInternalServerError,
+				"Error uploading photo",
+				helpers.GetErrorData(err),
+			),
+		)
+	}
+	cloudinary.Url = uploadUrl
+
+	// Buat file CSV
+	file, err := os.Create("hotel_orders.csv")
+	if err != nil {
+		fmt.Println("Gagal membuat file CSV:", err)
+		return err
+	}
+	defer file.Close()
+
+	// Buat writer CSV
+	writer := csv.NewWriter(file)
+	defer writer.Flush()
+
+	// Tulis header kolom
+	header := []string{"Hotel Order Code", "Hotel", "Hotel Room", "Check In Date", "Check Out Date", "Number of Night", "Price", "Total Amount", "Name Order", "Email Order", "Phone Number Order", "Status", "Order Date"}
+	if err := writer.Write(header); err != nil {
+		fmt.Println("Gagal menulis header kolom:", err)
+		return err
+	}
+
+	// Tulis data
+	for _, order := range hotelOrders {
+		row := []string{
+			order.HotelOrderCode,
+			order.Hotel,
+			order.HotelRoom,
+			order.CheckIn,
+			order.CheckOut,
+			strconv.Itoa(order.NumberOfNight),
+			strconv.Itoa(order.Price),
+			strconv.Itoa(order.TotalAmount),
+			order.NameOrder,
+			order.EmailOrder,
+			order.PhoneNumberOrder,
+			order.Status,
+			order.CreatedAt.String(),
+		}
+
+		if err := writer.Write(row); err != nil {
+			fmt.Println("Gagal menulis data:", err)
+			return err
+		}
+	}
+
+	fmt.Println("File CSV berhasil dibuat.")
+
+	return ctx.JSON(
+		http.StatusOK,
+		helpers.NewResponse(
+			http.StatusOK,
+			"Successfully uploaded CSV file",
+			cloudinary,
+		),
+	)
 }
