@@ -258,3 +258,8 @@
 | ------------ | :------------------------------------------------: | :--------------------------------------------------------------------: | :-------------------------------------------------------------------------------------------------------------------------: | :----------------------------------------------------------------------------------------------------------- |
 |    POST      |           /public/cloudinary/file-upload           | `201` Created    `400` Bad Request     `401` Unauthorized           `403` Forbidden      `404` Not found     `500`Internal Server Error          | Endpoint untuk upload file                                                                                                                        |Parameter : formdata file                                                               |
 |     POST     |           /public/cloudinary/url-upload            | `200` Ok      `400` Bad Request     `401` Unauthorized           `403` Forbidden      `404` Not found     `500`Internal Server Error          | Endpoint untuk upload file                                                                                                                        |Parameter : id ![Logo](https://i.postimg.cc/sD6JJKK7/23-06.png)                                               |
+
+
+## Document
+
+[File API Contact dapat diakses](https://docs.google.com/document/d/1ZH1PwKjKngKWaeKWHnyo8eRY8ftB4o6buqUpT321nTE/edit?usp=sharing)
