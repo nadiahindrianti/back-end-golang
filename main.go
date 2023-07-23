@@ -63,11 +63,11 @@ func main() {
 	routes.Init(e, db)
 
 	e.GET("/swagger/*", echoSwagger.WrapHandler)
-	// e.Logger.Fatal(e.Start(":8088"))
+	e.Logger.Fatal(e.Start(":443"))
 
 	// Start server with TLS
-	err = e.StartTLS(":443", "/etc/nginx/ssl/fullchain.pem", "/etc/nginx/ssl/privkey.pem")
-	if err != nil {
-		log.Fatal("StartTLS: ", err)
-	}
+	// err = e.StartTLS(":443", "/etc/nginx/ssl/fullchain.pem", "/etc/nginx/ssl/privkey.pem")
+	// if err != nil {
+	//	log.Fatal("StartTLS: ", err)
+	//}
 }
