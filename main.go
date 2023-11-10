@@ -4,7 +4,7 @@ import (
 	"back-end-golang/configs"
 	_ "back-end-golang/docs"
 	"back-end-golang/routes"
-	// "log"
+	"log"
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
