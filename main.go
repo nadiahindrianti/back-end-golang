@@ -66,7 +66,7 @@ func main() {
 	// e.Logger.Fatal(e.Start(":443"))
 
 	// Start server with TLS
-	err = e.StartTLS(":443", "/etc/letsencrypt/live/api.tripease.my.id/fullchain.pem", "/etc/letsencrypt/live/api.tripease.my.id/privkey.pem")
+	err = e.StartTLS(":443", "/etc/nginx/ssl/fullchain.pem", "/etc/nginx/ssl/privkey.pem")
 	if err != nil {
 		log.Fatal("StartTLS: ", err)
 	}
