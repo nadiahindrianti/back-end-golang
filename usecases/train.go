@@ -514,6 +514,10 @@ func (u *trainUsecase) UpdateTrain(id uint, train dtos.TrainInput) (dtos.TrainRe
 // @Router       /admin/train/{id} [delete]
 // @Security BearerAuth
 func (u *trainUsecase) DeleteTrain(id uint) error {
+	_, err := u.trainRepo.GetTrainByID2(id)
+	if err != nil {
+		return err
+	}
 	return u.trainRepo.DeleteTrain(id)
 }
 
@@ -601,16 +605,19 @@ func (u *trainUsecase) SearchTrainAvailable(userId uint, page, limit, stationOri
 			trainStationResponses = append(trainStationResponses, trainStationResponse)
 		}
 
+		// getTrainCarriage, err := u.trainRepo.GetTrainCarriageByTrainID(train.)
+
 		trainResponse := dtos.TrainResponse{
-			TrainID:   getTrain.ID,
-			CodeTrain: getTrain.CodeTrain,
-			Name:      getTrain.Name,
-			Class:     train.Class,
-			Price:     train.Price,
-			Route:     trainStationResponses,
-			Status:    getTrain.Status,
-			CreatedAt: getTrain.CreatedAt,
-			UpdatedAt: getTrain.UpdatedAt,
+			TrainID:         getTrain.ID,
+			CodeTrain:       getTrain.CodeTrain,
+			Name:            getTrain.Name,
+			Class:           train.Class,
+			Price:           train.Price,
+			Route:           trainStationResponses,
+			TrainCarriageID: train.ID,
+			Status:          getTrain.Status,
+			CreatedAt:       getTrain.CreatedAt,
+			UpdatedAt:       getTrain.UpdatedAt,
 		}
 		trainResponses = append(trainResponses, trainResponse)
 
